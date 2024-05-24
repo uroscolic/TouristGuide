@@ -6,15 +6,35 @@ import com.auth0.jwt.interfaces.DecodedJWT;
 import com.auth0.jwt.interfaces.JWTVerifier;
 import org.apache.commons.codec.digest.DigestUtils;
 import rs.raf.entities.User;
+import rs.raf.entities.UserType;
 import rs.raf.repositories.user.UserRepository;
+import rs.raf.requests.UpdateUserInfoRequest;
 
 import javax.inject.Inject;
 import java.util.Date;
+import java.util.List;
 
 public class UserService {
 
     @Inject
     UserRepository userRepository;
+
+    public User registerUser(User user) {
+        return this.userRepository.addUser(user);
+    }
+    public User changeActiveForUser(String email) {
+        return this.userRepository.changeActiveForUser(email);
+    }
+    public User findUser(String email) {
+        return this.userRepository.findUser(email);
+    }
+    public User changeUserInfo(UpdateUserInfoRequest updateUserInfoRequest) {
+        return this.userRepository.changeUserInfo(updateUserInfoRequest);
+    }
+
+    public List<User> allUsers() {
+        return this.userRepository.allUsers();
+    }
 
     public String login(String email, String password)
     {

@@ -1,5 +1,5 @@
 package rs.raf.entities;
 
 public enum UserType {
-    ADMIN, CONTENT_EDITOR
+    ADMIN, CONTENT_CREATOR
 }

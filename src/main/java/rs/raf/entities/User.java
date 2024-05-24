@@ -28,7 +28,6 @@ public class User {
     @NotNull(message = "Email field is required")
     @NotEmpty(message = "Email field is required")
     @Email(message = "Email field is not valid")
-    @UniqueElements(message = "Email already exists")
     private String email;
 
     @NotNull(message = "Password field is required")
@@ -38,7 +37,6 @@ public class User {
     private Boolean active = true;
 
     @NotNull(message = "UserType field is required")
-    @NotEmpty(message = "UserType field is required")
     private UserType userType;
 
 

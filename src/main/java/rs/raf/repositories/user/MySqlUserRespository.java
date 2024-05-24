@@ -4,6 +4,7 @@ import org.apache.commons.codec.digest.DigestUtils;
 import rs.raf.entities.User;
 import rs.raf.entities.UserType;
 import rs.raf.repositories.MySqlAbstractRepository;
+import rs.raf.requests.UpdateUserInfoRequest;
 
 import java.sql.*;
 import java.util.ArrayList;
@@ -151,4 +152,41 @@ public class MySqlUserRespository extends MySqlAbstractRepository implements Use
         }
         return user;
     }
+
+    @Override
+    public User changeUserInfo(UpdateUserInfoRequest updateUserInfoRequest) {
+        String email = updateUserInfoRequest.getOldEmail();
+        User user = findUser(email);
+        if(user != null) {
+            Connection connection = null;
+            PreparedStatement preparedStatement = null;
+            try {
+                connection = this.newConnection();
+
+                preparedStatement = connection.prepareStatement("UPDATE users SET name = ?, surname = ?, email = ?, user_type = ? WHERE email = ?");
+                preparedStatement.setString(1, updateUserInfoRequest.getName());
+                preparedStatement.setString(2, updateUserInfoRequest.getSurname());
+                preparedStatement.setString(3, updateUserInfoRequest.getNewEmail());
+                preparedStatement.setString(4, updateUserInfoRequest.getUserType().toString());
+                preparedStatement.setString(5, email);
+                preparedStatement.executeUpdate();
+
+                user.setName(updateUserInfoRequest.getName());
+                user.setSurname(updateUserInfoRequest.getSurname());
+                user.setEmail(updateUserInfoRequest.getNewEmail());
+                user.setUserType(updateUserInfoRequest.getUserType());
+
+                preparedStatement.close();
+                connection.close();
+            } catch (SQLException e) {
+                e.printStackTrace();
+            } finally {
+                this.closeStatement(preparedStatement);
+                this.closeConnection(connection);
+            }
+        }
+        return user;
+    }
+
+
 }
