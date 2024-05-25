@@ -40,7 +40,7 @@ public class UserResource {
         return Response.ok(this.userService.findUser(email)).build();
     }
 
-    // novi email ne sme biti zauzet
+
     @PUT
     @Path("/update")
     @Produces(MediaType.APPLICATION_JSON)
@@ -63,10 +63,11 @@ public class UserResource {
             System.out.println("These credentials do not match our records: " + loginRequest.getEmail() + " " + loginRequest.getPassword());
             return Response.status(422, "Unprocessable Entity").entity(response).build();
         }
-/*
+
+
         response.put("jwt", jwt);
-        response.put("email", loginRequest.getEmail());
         response.put("userType", this.userService.findUser(loginRequest.getEmail()).getUserType().toString());
+/*        response.put("email", loginRequest.getEmail());
         response.put("name", this.userService.findUser(loginRequest.getEmail()).getName());
         response.put("surname", this.userService.findUser(loginRequest.getEmail()).getSurname());
 */

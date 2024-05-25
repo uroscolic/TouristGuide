@@ -10,7 +10,7 @@ import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
-public class MySqlUserRespository extends MySqlAbstractRepository implements UserRepository{
+public class MySqlUserRepository extends MySqlAbstractRepository implements UserRepository{
     @Override
     public User findUser(String email) {
         User user = null;

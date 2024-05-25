@@ -4,16 +4,16 @@ import org.glassfish.hk2.utilities.binding.AbstractBinder;
 import org.glassfish.jersey.server.ResourceConfig;
 import org.glassfish.jersey.server.ServerProperties;
 import rs.raf.repositories.activity.ActivityRepository;
-import rs.raf.repositories.activity.MySqlActivityRespository;
+import rs.raf.repositories.activity.MySqlActivityRepository;
 import rs.raf.repositories.article.ArticleRepository;
-import rs.raf.repositories.article.MySqlArticleRespository;
+import rs.raf.repositories.article.MySqlArticleRepository;
 import rs.raf.repositories.comment.CommentRepository;
-import rs.raf.repositories.comment.MySqlCommentRespository;
+import rs.raf.repositories.comment.MySqlCommentRepository;
 import rs.raf.repositories.destination.DestinationRepository;
-import rs.raf.repositories.destination.MySqlDestinationRespository;
+import rs.raf.repositories.destination.MySqlDestinationRepository;
 import rs.raf.repositories.subject.InMemorySubjectRepository;
 import rs.raf.repositories.subject.SubjectRepository;
-import rs.raf.repositories.user.MySqlUserRespository;
+import rs.raf.repositories.user.MySqlUserRepository;
 import rs.raf.repositories.user.UserRepository;
 import rs.raf.services.*;
 
@@ -32,11 +32,11 @@ public class HelloApplication extends ResourceConfig {
             @Override
             protected void configure() {
                 this.bind(InMemorySubjectRepository.class).to(SubjectRepository.class).in(Singleton.class);
-                this.bind(MySqlUserRespository.class).to(UserRepository.class).in(Singleton.class);
-                this.bind(MySqlActivityRespository.class).to(ActivityRepository.class).in(Singleton.class);
-                this.bind(MySqlArticleRespository.class).to(ArticleRepository.class).in(Singleton.class);
-                this.bind(MySqlCommentRespository.class).to(CommentRepository.class).in(Singleton.class);
-                this.bind(MySqlDestinationRespository.class).to(DestinationRepository.class).in(Singleton.class);
+                this.bind(MySqlUserRepository.class).to(UserRepository.class).in(Singleton.class);
+                this.bind(MySqlActivityRepository.class).to(ActivityRepository.class).in(Singleton.class);
+                this.bind(MySqlArticleRepository.class).to(ArticleRepository.class).in(Singleton.class);
+                this.bind(MySqlCommentRepository.class).to(CommentRepository.class).in(Singleton.class);
+                this.bind(MySqlDestinationRepository.class).to(DestinationRepository.class).in(Singleton.class);
 
 
                 this.bindAsContract(UserService.class);
