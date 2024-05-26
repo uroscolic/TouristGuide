@@ -34,4 +34,37 @@ public class ArticleResource {
     public Response find(@PathParam("id") Long id) {
         return Response.ok(this.articleService.findArticle(id)).build();
     }
+
+    @DELETE
+    @Path("/{id}")
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response remove(@PathParam("id") Long id) {
+        Article article = this.articleService.findArticle(id);
+        if (article == null)
+            return Response.status(422, "Unprocessable Entity").entity("Article with this id does not exist.").build();
+        return Response.ok(this.articleService.removeArticle(article)).build();
+    }
+
+    @PUT
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response update(@Valid Article article) {
+        return Response.ok(this.articleService.updateArticle(article)).build();
+    }
+
+    @GET
+    @Path("/destination/{name}")
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response allArticlesByDestinationName(@PathParam("name") String name) {
+        return Response.ok(this.articleService.allArticlesByDestinationName(name)).build();
+    }
+
+    @PUT
+    @Path("/visit/{id}")
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response incrementNumberOfVisits(@PathParam("id") Long id) {
+        Article article = this.articleService.findArticle(id);
+        if (article == null)
+            return Response.status(422, "Unprocessable Entity").entity("Article with this id does not exist.").build();
+        return Response.ok(this.articleService.incrementNumberOfVisits(article)).build();
+    }
 }

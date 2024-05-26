@@ -6,7 +6,9 @@ import java.util.List;
 
 public interface DestinationRepository {
 
-    public Destination addDestination(Destination destination);
-    public Destination findDestination(String name);
-    public List<Destination> allDestinations();
+    Destination addDestination(Destination destination);
+    Destination findDestination(String name);
+    List<Destination> allDestinations();
+    String removeDestination(Destination destination);
+    Destination updateDestination(Destination destination);
 }

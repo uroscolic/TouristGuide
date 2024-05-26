@@ -108,4 +108,61 @@ public class MySqlDestinationRepository extends MySqlAbstractRepository implemen
 
         return destinations;
     }
+
+    @Override
+    public String removeDestination(Destination destination) {
+
+        String name = destination.getName();
+        Long id = destination.getId();
+
+        try (
+                Connection connection = this.newConnection();
+                PreparedStatement deleteStatement = connection.prepareStatement("delete from destinations where name = ?");
+                PreparedStatement selectStatement = connection.prepareStatement("select * from articles where destination_id = ?")
+        ){
+            selectStatement.setLong(1, id);
+
+            try(ResultSet resultSet = selectStatement.executeQuery())
+            {
+                if(resultSet.next())
+                    return "Destination is used in articles therefore it can't be removed.";
+
+            }
+            deleteStatement.setString(1, name);
+            deleteStatement.executeUpdate();
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return "Error while removing destination";
+        }
+        return "Destination removed";
+    }
+
+    @Override
+    public Destination updateDestination(Destination destination) {
+        Long id = destination.getId();
+
+        Connection connection = null;
+        PreparedStatement preparedStatement = null;
+
+        try {
+            connection = this.newConnection();
+
+            preparedStatement = connection.prepareStatement("UPDATE destinations SET name = ?, description = ? WHERE id = ?");
+            preparedStatement.setString(1, destination.getName());
+            preparedStatement.setString(2, destination.getDescription());
+            preparedStatement.setLong(3, id);
+            preparedStatement.executeUpdate();
+
+            preparedStatement.close();
+            connection.close();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } finally {
+            this.closeStatement(preparedStatement);
+            this.closeConnection(connection);
+        }
+
+        return destination;
+    }
 }

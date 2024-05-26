@@ -24,4 +24,16 @@ public class ArticleService {
     public List<Article> allArticles() {
         return this.articleRepository.allArticles();
     }
+    public List<Article> allArticlesByDestinationName(String name) {
+        return this.articleRepository.allArticlesByDestinationName(name);
+    }
+    public String removeArticle(Article article) {
+        return this.articleRepository.removeArticle(article);
+    }
+    public Article updateArticle(Article article) {
+        return this.articleRepository.updateArticle(article);
+    }
+    public int incrementNumberOfVisits(Article article) {
+        return this.articleRepository.incrementNumberOfVisits(article);
+    }
 }

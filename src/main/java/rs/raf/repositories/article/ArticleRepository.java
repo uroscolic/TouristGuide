@@ -6,7 +6,12 @@ import java.util.List;
 
 public interface ArticleRepository {
 
-    public Article addArticle(Article article);
-    public Article findArticle(Long id);
-    public List<Article> allArticles();
+    Article addArticle(Article article);
+    Article findArticle(Long id);
+    List<Article> allArticles();
+    List<Article> allArticlesByDestinationName(String name);
+    String removeArticle(Article article);
+    Article updateArticle(Article article);
+    int incrementNumberOfVisits(Article article);
+
 }

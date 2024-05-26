@@ -159,4 +159,121 @@ public class MySqlArticleRepository extends MySqlAbstractRepository implements A
 
         return articles;
     }
+
+    @Override
+    public List<Article> allArticlesByDestinationName(String name) {
+        List<Article> articles = new ArrayList<>();
+
+        try (Connection connection = this.newConnection();
+             PreparedStatement preparedStatement = connection.prepareStatement("SELECT * FROM articles WHERE destination_id = (SELECT id FROM destinations WHERE name = ?) ORDER BY date DESC")) {
+
+            preparedStatement.setString(1, name);
+            try (ResultSet resultSet = preparedStatement.executeQuery()) {
+                while (resultSet.next()) {
+                    long id = resultSet.getLong("id");
+                    long destinationId = resultSet.getLong("destination_id");
+                    String title = resultSet.getString("title");
+                    String text = resultSet.getString("text");
+                    String date = resultSet.getString("date");
+                    int numberOfVisits = resultSet.getInt("number_of_visits");
+                    String author = resultSet.getString("author");
+
+                    List<Long> activities = new ArrayList<>();
+                    try (PreparedStatement innerPreparedStatement = connection.prepareStatement("SELECT activity_id FROM articles_activities WHERE article_id = ?")) {
+                        innerPreparedStatement.setLong(1, id);
+                        try (ResultSet innerResultSet = innerPreparedStatement.executeQuery()) {
+                            while (innerResultSet.next()) {
+                                activities.add(innerResultSet.getLong("activity_id"));
+                            }
+                        }
+                    }
+
+                    articles.add(new Article(id, destinationId, activities, title, text, date, numberOfVisits, author));
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return articles;
+    }
+
+    @Override
+    public String removeArticle(Article article) {
+
+        Long id = article.getId();
+
+        try (
+                Connection connection = this.newConnection();
+                PreparedStatement deleteStatement = connection.prepareStatement("delete from articles where id = ?");
+        ){
+
+            deleteStatement.setLong(1, id);
+            deleteStatement.executeUpdate();
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return "Error while removing article";
+        }
+        return "Article removed";
+
+    }
+
+    @Override
+    public Article updateArticle(Article article) {
+        Long id = article.getId();
+
+        try (
+                Connection connection = this.newConnection();
+                PreparedStatement updateStatement = connection.prepareStatement("UPDATE articles SET destination_id = ?, title = ?, text = ?, date = ?, number_of_visits = ?, author = ? WHERE id = ?");
+                PreparedStatement deleteStatement = connection.prepareStatement("DELETE FROM articles_activities WHERE article_id = ?");
+                PreparedStatement selectActivityStatement = connection.prepareStatement("SELECT * FROM activities WHERE id = ?");
+                PreparedStatement insertActivityStatement = connection.prepareStatement("INSERT INTO articles_activities (article_id, activity_id) VALUES(?, ?)")
+        ) {
+            updateStatement.setLong(1, article.getDestinationId());
+            updateStatement.setString(2, article.getTitle());
+            updateStatement.setString(3, article.getText());
+            updateStatement.setString(4, article.getDate());
+            updateStatement.setInt(5, article.getNumberOfVisits());
+            updateStatement.setString(6, article.getAuthor());
+            updateStatement.setLong(7, id);
+            updateStatement.executeUpdate();
+
+            deleteStatement.setLong(1, id);
+            deleteStatement.executeUpdate();
+
+            for (Long activityId : article.getActivities().stream().distinct().collect(Collectors.toList())) {
+                selectActivityStatement.setLong(1, activityId);
+                try (ResultSet resultSet = selectActivityStatement.executeQuery()) {
+                    if (resultSet.next()) {
+                        insertActivityStatement.setLong(1, id);
+                        insertActivityStatement.setLong(2, activityId);
+                        insertActivityStatement.executeUpdate();
+                    }
+                }
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return article;
+    }
+
+    @Override
+    public int incrementNumberOfVisits(Article article) {
+
+        try (
+                Connection connection = this.newConnection();
+                PreparedStatement updateStatement = connection.prepareStatement("UPDATE articles SET number_of_visits = number_of_visits + 1 WHERE id = ?")
+        ) {
+            updateStatement.setLong(1, article.getId());
+            updateStatement.executeUpdate();
+            article.setNumberOfVisits(article.getNumberOfVisits() + 1);
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return -1;
+        }
+        return article.getNumberOfVisits();
+    }
 }
