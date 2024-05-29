@@ -56,7 +56,7 @@ public class UserService {
                 .withIssuedAt(issuedAt)
                 .withExpiresAt(expiresAt)
                 .withSubject(email)
-                .withClaim("type", user.getUserType().ordinal())
+                .withClaim("user_type", user.getUserType().ordinal())
                 .sign(algorithm);
     }
 
@@ -66,10 +66,12 @@ public class UserService {
         DecodedJWT jwt = verifier.verify(token);
 
         String email = jwt.getSubject();
-//        jwt.getClaim("role").asString();
+        int type = jwt.getClaim("user_type").asInt();
+        UserType userType = UserType.values()[type];
+        System.out.println(userType);
 
         User user = this.userRepository.findUser(email);
 
-        return user != null;
+        return user != null && userType == UserType.ADMIN;
     }
 }
