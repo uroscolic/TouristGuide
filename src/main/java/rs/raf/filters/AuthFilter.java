@@ -23,23 +23,27 @@ public class AuthFilter implements ContainerRequestFilter, ContainerResponseFilt
 
     @Inject
     UserService userService;
+    private boolean adminRequired = false;
 
     @Override
     public void filter(ContainerRequestContext requestContext) throws IOException {
 
-//        if (true) return;
-        System.out.println("Filtering");
+        if(requestContext.getMethod().equalsIgnoreCase("OPTIONS")) {
+            requestContext.abortWith(Response.ok().build());
+            return;
+        }
+
+
         if (!this.isAuthRequired(requestContext)) {
             return;
         }
-        System.out.println("Auth required");
         try {
             String token = requestContext.getHeaderString("Authorization");
             if(token != null && token.startsWith("Bearer ")) {
                 token = token.replace("Bearer ", "");
             }
 
-            if (!this.userService.isAuthorized(token)) {
+            if (!this.userService.isAuthorized(token, adminRequired)) {
                 requestContext.abortWith(Response.status(Response.Status.UNAUTHORIZED).build());
             }
         } catch (Exception exception) {
@@ -55,22 +59,24 @@ public class AuthFilter implements ContainerRequestFilter, ContainerResponseFilt
 
         List<Object> matchedResources = req.getUriInfo().getMatchedResources();
         for (Object matchedResource : matchedResources) {
-            System.out.println("-----------------");
-            System.out.println(matchedResource.getClass().getName());
             if (matchedResource instanceof UserResource) {
+                adminRequired = true;
                 return true;
             }
-        }
-        System.out.println("No destination resource");
 
-        return false;
+
+        }
+        adminRequired = false;
+        return true;
     }
 
     @Override
     public void filter(ContainerRequestContext containerRequestContext, ContainerResponseContext containerResponseContext) throws IOException {
 
         containerResponseContext.getHeaders().add("Access-Control-Allow-Origin", "*");
-        containerResponseContext.getHeaders().add("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE");
-        containerResponseContext.getHeaders().add("Access-Control-Allow-Headers", "Content-Type, Authorization");
+        containerResponseContext.getHeaders().add("Access-Control-Allow-Headers", "origin, content-type, accept, authorization");
+        containerResponseContext.getHeaders().add("Access-Control-Allow-Credentials", "true");
+        containerResponseContext.getHeaders().add("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS, HEAD");
+        containerResponseContext.getHeaders().add("Access-Control-Max-Age", "1209600");
     }
 }

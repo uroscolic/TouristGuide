@@ -39,6 +39,9 @@ public class DestinationResource {
     @PUT
     @Produces(MediaType.APPLICATION_JSON)
     public Response update(@Valid Destination destination) {
+        Destination destination1 = destinationService.findDestination(destination.getName());
+        if(destination1 != null && !destination1.getId().equals(destination.getId()))
+            return Response.status(422, "Unprocessable Entity").entity("Destination with this name already exists.").build();
         return Response.ok(this.destinationService.updateDestination(destination)).build();
     }
 

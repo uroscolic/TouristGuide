@@ -60,7 +60,7 @@ public class UserService {
                 .sign(algorithm);
     }
 
-    public boolean isAuthorized(String token){
+    public boolean isAuthorized(String token, boolean adminRequired){
         Algorithm algorithm = Algorithm.HMAC256("secret");
         JWTVerifier verifier = JWT.require(algorithm).build();
         DecodedJWT jwt = verifier.verify(token);
@@ -68,10 +68,12 @@ public class UserService {
         String email = jwt.getSubject();
         int type = jwt.getClaim("user_type").asInt();
         UserType userType = UserType.values()[type];
-        System.out.println(userType);
+
 
         User user = this.userRepository.findUser(email);
-
-        return user != null && userType == UserType.ADMIN;
+        if(adminRequired) {
+            return user != null && userType == UserType.ADMIN && user.getActive();
+        }
+        return user != null && user.getActive();
     }
 }
