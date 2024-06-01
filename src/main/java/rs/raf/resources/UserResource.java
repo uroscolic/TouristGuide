@@ -67,8 +67,9 @@ public class UserResource {
 
         response.put("jwt", jwt);
         response.put("userType", this.userService.findUser(loginRequest.getEmail()).getUserType().toString());
-/*        response.put("email", loginRequest.getEmail());
         response.put("name", this.userService.findUser(loginRequest.getEmail()).getName());
+/*
+        response.put("email", loginRequest.getEmail());
         response.put("surname", this.userService.findUser(loginRequest.getEmail()).getSurname());
 */
         return Response.ok(response).build();

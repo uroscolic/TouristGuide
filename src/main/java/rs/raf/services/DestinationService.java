@@ -31,5 +31,8 @@ public class DestinationService {
     public Destination updateDestination(Destination destination) {
         return this.destinationRepository.updateDestination(destination);
     }
+    public Destination findDestination(Long id) {
+        return this.destinationRepository.findDestination(id);
+    }
 
 }

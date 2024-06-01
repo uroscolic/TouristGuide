@@ -113,7 +113,7 @@ public class MySqlArticleRepository extends MySqlAbstractRepository implements A
     }
 
     @Override
-    public List<Article> allArticles() {
+    public List<Article> allArticles(String filter) {
         List<Article> articles = new ArrayList<>();
 
         Connection connection = null;
@@ -126,7 +126,12 @@ public class MySqlArticleRepository extends MySqlAbstractRepository implements A
             connection = this.newConnection();
 
             statement = connection.createStatement();
-            resultSet = statement.executeQuery("select * from articles ORDER BY date DESC");
+            if(filter.equals("mostRecent"))
+                resultSet = statement.executeQuery("select * from articles ORDER BY date DESC limit 10");
+            else if(filter.equals("mostRead"))
+                resultSet = statement.executeQuery("select * from articles WHERE date >= DATE_SUB(NOW(), INTERVAL 1 MONTH) ORDER BY number_of_visits DESC, date DESC limit 10");
+            else
+                resultSet = statement.executeQuery("select * from articles ORDER BY date DESC");
             while (resultSet.next()) {
                 long id = resultSet.getLong("id");
                 long destinationId = resultSet.getLong("destination_id");

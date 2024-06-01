@@ -19,7 +19,19 @@ public class ArticleResource {
     @Produces(MediaType.APPLICATION_JSON)
     public Response allArticles() {
         System.out.println("All articles");
-        return Response.ok(this.articleService.allArticles()).build();
+        return Response.ok(this.articleService.allArticles("All")).build();
+    }
+    @GET
+    @Path("/most-recent")
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response mostRecentArticles() {
+        return Response.ok(this.articleService.allArticles("mostRecent")).build();
+    }
+    @GET
+    @Path("/most-read")
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response mostReadArticles() {
+        return Response.ok(this.articleService.allArticles("mostRead")).build();
     }
 
     @POST
@@ -67,4 +79,5 @@ public class ArticleResource {
             return Response.status(422, "Unprocessable Entity").entity("Article with this id does not exist.").build();
         return Response.ok(this.articleService.incrementNumberOfVisits(article)).build();
     }
+
 }

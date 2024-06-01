@@ -11,4 +11,5 @@ public interface DestinationRepository {
     List<Destination> allDestinations();
     String removeDestination(Destination destination);
     Destination updateDestination(Destination destination);
+    Destination findDestination(Long id);
 }

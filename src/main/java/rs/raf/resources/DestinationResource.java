@@ -27,6 +27,12 @@ public class DestinationResource {
     public Response find(@PathParam("name") String name) {
         return Response.ok(this.destinationService.findDestination(name)).build();
     }
+    @GET
+    @Path("/by/{id}")
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response find(@PathParam("id") Long id) {
+        return Response.ok(this.destinationService.findDestination(id)).build();
+    }
 
     @POST
     @Produces(MediaType.APPLICATION_JSON)

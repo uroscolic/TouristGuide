@@ -21,8 +21,8 @@ public class ArticleService {
     public Article findArticle(Long id) {
         return this.articleRepository.findArticle(id);
     }
-    public List<Article> allArticles() {
-        return this.articleRepository.allArticles();
+    public List<Article> allArticles(String filter) {
+        return this.articleRepository.allArticles(filter);
     }
     public List<Article> allArticlesByDestinationName(String name) {
         return this.articleRepository.allArticlesByDestinationName(name);

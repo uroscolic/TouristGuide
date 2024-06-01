@@ -8,7 +8,7 @@ public interface ArticleRepository {
 
     Article addArticle(Article article);
     Article findArticle(Long id);
-    List<Article> allArticles();
+    List<Article> allArticles(String filter);
     List<Article> allArticlesByDestinationName(String name);
     String removeArticle(Article article);
     Article updateArticle(Article article);
