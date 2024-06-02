@@ -1,11 +1,7 @@
 package rs.raf.filters;
 
 
-import rs.raf.entities.Destination;
-import rs.raf.resources.DestinationResource;
 import rs.raf.resources.UserResource;
-import rs.raf.services.DestinationService;
-import rs.raf.services.SubjectService;
 import rs.raf.services.UserService;
 
 import javax.inject.Inject;

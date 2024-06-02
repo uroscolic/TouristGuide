@@ -12,8 +12,6 @@ import rs.raf.repositories.comment.CommentRepository;
 import rs.raf.repositories.comment.MySqlCommentRepository;
 import rs.raf.repositories.destination.DestinationRepository;
 import rs.raf.repositories.destination.MySqlDestinationRepository;
-import rs.raf.repositories.subject.InMemorySubjectRepository;
-import rs.raf.repositories.subject.SubjectRepository;
 import rs.raf.repositories.user.MySqlUserRepository;
 import rs.raf.repositories.user.UserRepository;
 import rs.raf.services.*;
@@ -32,7 +30,6 @@ public class HelloApplication extends ResourceConfig {
         AbstractBinder binder = new AbstractBinder() {
             @Override
             protected void configure() {
-                this.bind(InMemorySubjectRepository.class).to(SubjectRepository.class).in(Singleton.class);
                 this.bind(MySqlUserRepository.class).to(UserRepository.class).in(Singleton.class);
                 this.bind(MySqlActivityRepository.class).to(ActivityRepository.class).in(Singleton.class);
                 this.bind(MySqlArticleRepository.class).to(ArticleRepository.class).in(Singleton.class);
@@ -46,7 +43,6 @@ public class HelloApplication extends ResourceConfig {
                 this.bindAsContract(CommentService.class);
                 this.bindAsContract(DestinationService.class);
 
-                this.bindAsContract(SubjectService.class);
             }
         };
         register(binder);
