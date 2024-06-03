@@ -9,4 +9,5 @@ public interface CommentRepository {
     Comment addComment(Comment comment);
     Comment findComment(Long id);
     List<Comment> allComments();
+    List<Comment> allCommentsByArticleId(Long id);
 }

@@ -113,4 +113,38 @@ public class MySqlCommentRepository extends MySqlAbstractRepository implements C
 
         return comments;
     }
+
+    @Override
+    public List<Comment> allCommentsByArticleId(Long id) {
+        List<Comment> comments = new ArrayList<>();
+
+        Connection connection = null;
+        PreparedStatement preparedStatement = null;
+        ResultSet resultSet = null;
+        try {
+            connection = this.newConnection();
+
+            preparedStatement = connection.prepareStatement("select * from comments where article_id = ? order by date desc");
+            preparedStatement.setLong(1, id);
+            resultSet = preparedStatement.executeQuery();
+
+
+            while (resultSet.next()) {
+                comments.add(new Comment(resultSet.getLong("id"),
+                        resultSet.getLong("article_id"),
+                        resultSet.getString("author"),
+                        resultSet.getString("text"),
+                        resultSet.getString("date")));
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            this.closeStatement(preparedStatement);
+            this.closeResultSet(resultSet);
+            this.closeConnection(connection);
+        }
+
+        return comments;
+    }
 }

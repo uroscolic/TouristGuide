@@ -12,6 +12,7 @@ public interface ArticleRepository {
     List<Article> allArticlesByDestinationName(String name);
     String removeArticle(Article article);
     Article updateArticle(Article article);
+    List<Article> allArticlesByActivityId(Long id);
     int incrementNumberOfVisits(Article article);
 
 }

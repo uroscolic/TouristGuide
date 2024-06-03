@@ -266,6 +266,45 @@ public class MySqlArticleRepository extends MySqlAbstractRepository implements A
     }
 
     @Override
+    public List<Article> allArticlesByActivityId(Long id) {
+        List<Article> articles = new ArrayList<>();
+
+        try (Connection connection = this.newConnection();
+             PreparedStatement preparedStatement = connection.prepareStatement("SELECT * FROM articles WHERE id in (SELECT article_id FROM articles_activities WHERE activity_id = ?) ORDER BY date DESC")) {
+
+            preparedStatement.setLong(1, id);
+            try (ResultSet resultSet = preparedStatement.executeQuery()) {
+                while (resultSet.next()) {
+                    System.out.println(resultSet.getLong("id"));
+                    long articleId = resultSet.getLong("id");
+                    long destinationId = resultSet.getLong("destination_id");
+                    String title = resultSet.getString("title");
+                    String text = resultSet.getString("text");
+                    String date = resultSet.getString("date");
+                    int numberOfVisits = resultSet.getInt("number_of_visits");
+                    String author = resultSet.getString("author");
+
+                    List<Long> activities = new ArrayList<>();
+                    try (PreparedStatement innerPreparedStatement = connection.prepareStatement("SELECT activity_id FROM articles_activities WHERE article_id = ?")) {
+                        innerPreparedStatement.setLong(1, articleId);
+                        try (ResultSet innerResultSet = innerPreparedStatement.executeQuery()) {
+                            while (innerResultSet.next()) {
+                                activities.add(innerResultSet.getLong("activity_id"));
+                            }
+                        }
+                    }
+
+                    articles.add(new Article(articleId, destinationId, activities, title, text, date, numberOfVisits, author));
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return articles;
+    }
+
+    @Override
     public int incrementNumberOfVisits(Article article) {
 
         try (

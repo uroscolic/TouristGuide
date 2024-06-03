@@ -36,4 +36,7 @@ public class ArticleService {
     public int incrementNumberOfVisits(Article article) {
         return this.articleRepository.incrementNumberOfVisits(article);
     }
+    public List<Article> allArticlesByActivityId(Long id) {
+        return this.articleRepository.allArticlesByActivityId(id);
+    }
 }

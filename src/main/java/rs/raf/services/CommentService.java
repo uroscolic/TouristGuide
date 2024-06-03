@@ -24,4 +24,7 @@ public class CommentService {
         return this.commentRepository.findComment(id);
     }
 
+    public List<Comment> allCommentsByArticleId(Long id) {
+        return this.commentRepository.allCommentsByArticleId(id);
+    }
 }

@@ -69,6 +69,12 @@ public class ArticleResource {
     public Response allArticlesByDestinationName(@PathParam("name") String name) {
         return Response.ok(this.articleService.allArticlesByDestinationName(name)).build();
     }
+    @GET
+    @Path("/activity/{id}")
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response allArticlesByActivityId(@PathParam("id") Long id) {
+        return Response.ok(this.articleService.allArticlesByActivityId(id)).build();
+    }
 
     @PUT
     @Path("/visit/{id}")

@@ -27,6 +27,13 @@ public class CommentResource {
         return Response.ok(this.commentService.findComment(id)).build();
     }
 
+    @GET
+    @Path("/article/{id}")
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response allCommentsByArticleId(@PathParam("id") Long id) {
+        return Response.ok(this.commentService.allCommentsByArticleId(id)).build();
+    }
+
     @POST
     @Produces(MediaType.APPLICATION_JSON)
     public Response create(Comment comment) {
