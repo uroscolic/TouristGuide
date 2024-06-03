@@ -32,8 +32,12 @@ public class UserService {
         return this.userRepository.changeUserInfo(updateUserInfoRequest);
     }
 
-    public List<User> allUsers() {
-        return this.userRepository.allUsers();
+    public List<User> allUsers(int page, int size) {
+        return this.userRepository.allUsers(page, size);
+    }
+
+    public long getTotalUserCount() {
+        return userRepository.countUsers();
     }
 
     public String login(String email, String password)
