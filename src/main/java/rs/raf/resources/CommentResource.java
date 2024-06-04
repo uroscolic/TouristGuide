@@ -7,6 +7,9 @@ import javax.inject.Inject;
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 @Path("/comments")
 public class CommentResource {
@@ -30,8 +33,15 @@ public class CommentResource {
     @GET
     @Path("/article/{id}")
     @Produces(MediaType.APPLICATION_JSON)
-    public Response allCommentsByArticleId(@PathParam("id") Long id) {
-        return Response.ok(this.commentService.allCommentsByArticleId(id)).build();
+    public Response allCommentsByArticleId(@PathParam("id") Long id, @QueryParam("page") @DefaultValue("1") int page, @QueryParam("size") @DefaultValue("10") int size){
+        List<Comment> comments = this.commentService.allCommentsByArticleId(id, page, size);
+        long count = this.commentService.countCommentsByArticleId(id);
+        Map<String, Object> response = new HashMap<>();
+        response.put("comments", comments);
+        response.put("totalComments", count);
+        response.put("currentPage", page);
+        response.put("totalPages", (int) Math.ceil((double) count / size));
+        return Response.ok(response).build();
     }
 
     @POST

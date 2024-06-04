@@ -115,7 +115,7 @@ public class MySqlCommentRepository extends MySqlAbstractRepository implements C
     }
 
     @Override
-    public List<Comment> allCommentsByArticleId(Long id) {
+    public List<Comment> allCommentsByArticleId(Long id, int page, int size) {
         List<Comment> comments = new ArrayList<>();
 
         Connection connection = null;
@@ -124,8 +124,10 @@ public class MySqlCommentRepository extends MySqlAbstractRepository implements C
         try {
             connection = this.newConnection();
 
-            preparedStatement = connection.prepareStatement("select * from comments where article_id = ? order by date desc");
+            preparedStatement = connection.prepareStatement("select * from comments where article_id = ? order by date desc limit ? offset ?");
             preparedStatement.setLong(1, id);
+            preparedStatement.setInt(2, size);
+            preparedStatement.setInt(3, (page - 1) * size);
             resultSet = preparedStatement.executeQuery();
 
 
@@ -146,5 +148,29 @@ public class MySqlCommentRepository extends MySqlAbstractRepository implements C
         }
 
         return comments;
+    }
+
+    @Override
+    public long countCommentsByArticleId(Long id) {
+        long count = 0;
+
+        Connection connection = null;
+        PreparedStatement preparedStatement = null;
+        ResultSet resultSet = null;
+        try {
+            connection = this.newConnection();
+
+            preparedStatement = connection.prepareStatement("select count(*) as count from comments where article_id = ?");
+            preparedStatement.setLong(1, id);
+            resultSet = preparedStatement.executeQuery();
+
+            if (resultSet.next()) {
+                count = resultSet.getLong("count");
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return count;
     }
 }

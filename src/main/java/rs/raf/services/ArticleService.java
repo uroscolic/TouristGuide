@@ -21,11 +21,14 @@ public class ArticleService {
     public Article findArticle(Long id) {
         return this.articleRepository.findArticle(id);
     }
-    public List<Article> allArticles(String filter) {
-        return this.articleRepository.allArticles(filter);
+    public List<Article> allArticles(String filter, int page, int size) {
+        return this.articleRepository.allArticles(filter, page, size);
     }
-    public List<Article> allArticlesByDestinationName(String name) {
-        return this.articleRepository.allArticlesByDestinationName(name);
+    public long countArticles(String filter) {
+        return this.articleRepository.countArticles(filter);
+    }
+    public List<Article> allArticlesByDestinationName(String name, int page, int size) {
+        return this.articleRepository.allArticlesByDestinationName(name, page, size);
     }
     public String removeArticle(Article article) {
         return this.articleRepository.removeArticle(article);
@@ -36,7 +39,13 @@ public class ArticleService {
     public int incrementNumberOfVisits(Article article) {
         return this.articleRepository.incrementNumberOfVisits(article);
     }
-    public List<Article> allArticlesByActivityId(Long id) {
-        return this.articleRepository.allArticlesByActivityId(id);
+    public long countArticlesByActivityId(Long id) {
+        return this.articleRepository.countArticlesByActivityId(id);
+    }
+    public long countArticlesByDestinationName(String name) {
+        return this.articleRepository.countArticlesByDestinationName(name);
+    }
+    public List<Article> allArticlesByActivityId(Long id, int page, int size) {
+        return this.articleRepository.allArticlesByActivityId(id, page, size);
     }
 }

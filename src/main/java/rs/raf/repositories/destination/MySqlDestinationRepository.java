@@ -80,7 +80,35 @@ public class MySqlDestinationRepository extends MySqlAbstractRepository implemen
     }
 
     @Override
-    public List<Destination> allDestinations() {
+    public long countDestinations() {
+        long count = 0;
+
+        Connection connection = null;
+        Statement statement = null;
+        ResultSet resultSet = null;
+        try {
+            connection = this.newConnection();
+
+            statement = connection.createStatement();
+            resultSet = statement.executeQuery("select count(*) from destinations");
+
+            if(resultSet.next()) {
+                count = resultSet.getLong(1);
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            this.closeStatement(statement);
+            this.closeResultSet(resultSet);
+            this.closeConnection(connection);
+        }
+
+        return count;
+    }
+
+    @Override
+    public List<Destination> allDestinations(int page, int size) {
         List<Destination> destinations = new ArrayList<>();
 
         Connection connection = null;
@@ -90,7 +118,7 @@ public class MySqlDestinationRepository extends MySqlAbstractRepository implemen
             connection = this.newConnection();
 
             statement = connection.createStatement();
-            resultSet = statement.executeQuery("select * from destinations");
+            resultSet = statement.executeQuery("select * from destinations limit " + size + " offset " + (page - 1) * size + "");
 
             while (resultSet.next()) {
                 destinations.add(new Destination(resultSet.getLong("id"),
@@ -108,6 +136,7 @@ public class MySqlDestinationRepository extends MySqlAbstractRepository implemen
 
         return destinations;
     }
+
 
     @Override
     public String removeDestination(Destination destination) {

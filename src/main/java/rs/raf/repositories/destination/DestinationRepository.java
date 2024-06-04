@@ -8,7 +8,8 @@ public interface DestinationRepository {
 
     Destination addDestination(Destination destination);
     Destination findDestination(String name);
-    List<Destination> allDestinations();
+    long countDestinations();
+    List<Destination> allDestinations(int page, int size);
     String removeDestination(Destination destination);
     Destination updateDestination(Destination destination);
     Destination findDestination(Long id);

@@ -113,7 +113,7 @@ public class MySqlArticleRepository extends MySqlAbstractRepository implements A
     }
 
     @Override
-    public List<Article> allArticles(String filter) {
+    public List<Article> allArticles(String filter, int page, int size) {
         List<Article> articles = new ArrayList<>();
 
         Connection connection = null;
@@ -121,17 +121,18 @@ public class MySqlArticleRepository extends MySqlAbstractRepository implements A
         ResultSet resultSet = null;
         Statement innerStatement = null;
         ResultSet innerResultSet = null;
+        int limit = page*size > 10 ? 10 - (page-1)*size : size;
 
         try {
             connection = this.newConnection();
 
             statement = connection.createStatement();
             if(filter.equals("mostRecent"))
-                resultSet = statement.executeQuery("select * from articles ORDER BY date DESC limit 10");
+                resultSet = statement.executeQuery("select * from articles ORDER BY date DESC limit " + limit + " OFFSET " + (page - 1) * size);
             else if(filter.equals("mostRead"))
-                resultSet = statement.executeQuery("select * from articles WHERE date >= DATE_SUB(NOW(), INTERVAL 1 MONTH) ORDER BY number_of_visits DESC, date DESC limit 10");
+                resultSet = statement.executeQuery("select * from articles WHERE date >= DATE_SUB(NOW(), INTERVAL 1 MONTH) ORDER BY number_of_visits DESC, date DESC limit " + limit + " OFFSET " + (page - 1) * size);
             else
-                resultSet = statement.executeQuery("select * from articles ORDER BY date DESC");
+                resultSet = statement.executeQuery("select * from articles ORDER BY date DESC limit " + size + " offset " + (page - 1) * size);
             while (resultSet.next()) {
                 long id = resultSet.getLong("id");
                 long destinationId = resultSet.getLong("destination_id");
@@ -165,14 +166,51 @@ public class MySqlArticleRepository extends MySqlAbstractRepository implements A
         return articles;
     }
 
+
     @Override
-    public List<Article> allArticlesByDestinationName(String name) {
+    public long countArticles(String filter) {
+        long count = 0;
+
+        Connection connection = null;
+        Statement statement = null;
+        ResultSet resultSet = null;
+        try {
+
+            connection = this.newConnection();
+
+            statement = connection.createStatement();
+            if(filter.equals("mostRecent"))
+                resultSet = statement.executeQuery("select count(*) from articles ORDER BY date DESC limit 10");
+            else if(filter.equals("mostRead"))
+                resultSet = statement.executeQuery("select count(*) from articles WHERE date >= DATE_SUB(NOW(), INTERVAL 1 MONTH) ORDER BY number_of_visits DESC, date DESC limit 10");
+            else
+                resultSet = statement.executeQuery("select count(*) from articles");
+
+            if(resultSet.next()) {
+                count = resultSet.getLong(1);
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            this.closeResultSet(resultSet);
+            this.closeStatement(statement);
+            this.closeConnection(connection);
+        }
+
+        return count;
+    }
+
+    @Override
+    public List<Article> allArticlesByDestinationName(String name, int page, int size) {
         List<Article> articles = new ArrayList<>();
 
         try (Connection connection = this.newConnection();
-             PreparedStatement preparedStatement = connection.prepareStatement("SELECT * FROM articles WHERE destination_id = (SELECT id FROM destinations WHERE name = ?) ORDER BY date DESC")) {
+             PreparedStatement preparedStatement = connection.prepareStatement("SELECT * FROM articles WHERE destination_id = (SELECT id FROM destinations WHERE name = ?) ORDER BY date DESC LIMIT ? OFFSET ?")) {
 
             preparedStatement.setString(1, name);
+            preparedStatement.setInt(2, size);
+            preparedStatement.setInt(3, (page - 1) * size);
             try (ResultSet resultSet = preparedStatement.executeQuery()) {
                 while (resultSet.next()) {
                     long id = resultSet.getLong("id");
@@ -201,6 +239,26 @@ public class MySqlArticleRepository extends MySqlAbstractRepository implements A
         }
 
         return articles;
+    }
+
+    @Override
+    public long countArticlesByDestinationName(String name) {
+        long count = 0;
+
+        try (Connection connection = this.newConnection();
+             PreparedStatement preparedStatement = connection.prepareStatement("SELECT count(*) FROM articles WHERE destination_id = (SELECT id FROM destinations WHERE name = ?)")) {
+
+            preparedStatement.setString(1, name);
+            try (ResultSet resultSet = preparedStatement.executeQuery()) {
+                if (resultSet.next()) {
+                    count = resultSet.getLong(1);
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return count;
     }
 
     @Override
@@ -266,13 +324,15 @@ public class MySqlArticleRepository extends MySqlAbstractRepository implements A
     }
 
     @Override
-    public List<Article> allArticlesByActivityId(Long id) {
+    public List<Article> allArticlesByActivityId(Long id, int page, int size) {
         List<Article> articles = new ArrayList<>();
 
         try (Connection connection = this.newConnection();
-             PreparedStatement preparedStatement = connection.prepareStatement("SELECT * FROM articles WHERE id in (SELECT article_id FROM articles_activities WHERE activity_id = ?) ORDER BY date DESC")) {
+             PreparedStatement preparedStatement = connection.prepareStatement("SELECT * FROM articles WHERE id in (SELECT article_id FROM articles_activities WHERE activity_id = ?) ORDER BY date DESC LIMIT ? OFFSET ?")) {
 
             preparedStatement.setLong(1, id);
+            preparedStatement.setInt(2, size);
+            preparedStatement.setInt(3, (page - 1) * size);
             try (ResultSet resultSet = preparedStatement.executeQuery()) {
                 while (resultSet.next()) {
                     System.out.println(resultSet.getLong("id"));
@@ -302,6 +362,26 @@ public class MySqlArticleRepository extends MySqlAbstractRepository implements A
         }
 
         return articles;
+    }
+
+    @Override
+    public long countArticlesByActivityId(Long id) {
+        long count = 0;
+
+        try (Connection connection = this.newConnection();
+             PreparedStatement preparedStatement = connection.prepareStatement("SELECT count(*) FROM articles WHERE id in (SELECT article_id FROM articles_activities WHERE activity_id = ?)")) {
+
+            preparedStatement.setLong(1, id);
+            try (ResultSet resultSet = preparedStatement.executeQuery()) {
+                if (resultSet.next()) {
+                    count = resultSet.getLong(1);
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return count;
     }
 
     @Override
