@@ -1,6 +1,9 @@
 package rs.raf.filters;
 
 
+import rs.raf.resources.ActivityResource;
+import rs.raf.resources.ArticleResource;
+import rs.raf.resources.DestinationResource;
 import rs.raf.resources.UserResource;
 import rs.raf.services.UserService;
 
@@ -60,10 +63,9 @@ public class AuthFilter implements ContainerRequestFilter, ContainerResponseFilt
                 return true;
             }
 
-
         }
         adminRequired = false;
-        return true;
+        return false;
     }
 
     @Override
